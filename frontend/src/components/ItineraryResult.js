@@ -33,7 +33,7 @@ function ItineraryResult({ isLoading, error, itinerary }) {
         {itinerary && itinerary.length > 0 && (
 
           // Use an Accordion, 'defaultActiveKey="0"' opens the first day by default
-          <Accordion defaultActiveKey="0" alwaysOpen>
+          <Accordion defaultActiveKey="0" >
 
             {/* Loop over each 'day' in the itinerary array */}
             {itinerary.map((day, index) => (

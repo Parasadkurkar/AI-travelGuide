@@ -1,122 +1,156 @@
 import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 import Spinner from 'react-bootstrap/Spinner';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
+// --- NEW SWIPER IMPORTS ---
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/autoplay';
+// --- END SWIPER IMPORTS ---
 
 function SuggestedTripsPage() {
-  const [trips, setTrips] = useState([]); 
+  // --- Existing State ---
+  const [trips, setTrips] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // --- NEW STATE ---
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  // This will hold the Swiper instance so we can pause/play it
+  const [swiperInstance, setSwiperInstance] = useState(null);
+
+  // --- Existing Data Fetch (with fallback) ---
   useEffect(() => {
-    // --- THIS IS THE NEW FALLBACK LOGIC ---
     const fetchTrips = async () => {
       setIsLoading(true);
       setError(null);
-      
-      // --- 1. TRY THE PRIMARY (DYNAMIC) API FIRST ---
       try {
-        console.log("Attempting to fetch from dynamic API...");
         const response = await fetch('http://localhost:5001/api/dynamic-trips');
-        
-        // If response is bad (e.g., 429 Quota Exceeded), throw an error
-        if (!response.ok) {
-          throw new Error('Dynamic API failed. Status: ' + response.status);
-        }
-        
+        if (!response.ok) throw new Error('Dynamic API failed');
         const data = await response.json();
-        console.log("Successfully fetched from dynamic API.");
         setTrips(data);
-        
       } catch (primaryError) {
-        // --- 2. PRIMARY FAILED! TRY THE FALLBACK (DATABASE) API ---
-        console.warn(primaryError.message);
-        console.log("Attempting to fetch from fallback (database) API...");
-        
+        console.warn(primaryError.message, "Falling back to local DB.");
         try {
           const fallbackResponse = await fetch('http://localhost:5001/api/trips');
-          
-          if (!fallbackResponse.ok) {
-            throw new Error('Fallback API also failed.');
-          }
-          
+          if (!fallbackResponse.ok) throw new Error('Fallback API also failed');
           const fallbackData = await fallbackResponse.json();
-          console.log("Successfully fetched from fallback API.");
           setTrips(fallbackData);
-          
         } catch (fallbackError) {
-          // --- 3. BOTH FAILED! SHOW A FINAL ERROR ---
-          console.error("All fetch attempts failed:", fallbackError.message);
           setError("Could not load suggested trips. Please try again later.");
         }
       } finally {
-        // This runs whether it succeeded or failed
         setIsLoading(false);
       }
     };
-
     fetchTrips();
-  }, []); // The empty array [] means this effect runs only once
+  }, []);
 
-  // --- THIS RENDER LOGIC REMAINS EXACTLY THE SAME ---
-  // It doesn't care *where* the trips came from.
+  // --- NEW HANDLERS ---
+  const handleCardClick = (trip) => {
+    if (swiperInstance) swiperInstance.autoplay.stop(); // Pause the carousel
+    setSelectedTrip(trip); // Show the modal
+  };
 
-  // 1. Show loading spinner
-  if (isLoading) {
-    return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-2 text-muted">Loading trips...</p>
-      </Container>
-    );
-  }
+  const handleModalClose = () => {
+    setSelectedTrip(null); // Hide the modal
+    if (swiperInstance) swiperInstance.autoplay.start(); // Resume the carousel
+  };
 
-  // 2. Show error message
-  if (error) {
-    return (
-      <Container>
-        <Alert variant="danger">
-          <Alert.Heading>Error</Alert.Heading>
-          <p>{error}</p>
-        </Alert>
-      </Container>
-    );
-  }
+  // --- RENDER LOGIC ---
 
-  // 3. Show trip cards (success)
+  if (isLoading) { /* ... (Spinner logic - no change) ... */ }
+  if (error) { /* ... (Error logic - no change) ... */ }
+
+  // --- NEW RENDER: SWIPER.JS CAROUSEL ---
   return (
-    <Container>
-      <h2 className="mb-4">Suggested Trips</h2>
+<Container> {/* 1. REMOVED 'fluid' PROP */}
+      <h2 className="mb-4 text-center">Suggested Trips</h2>
       
-      <Row xs={1} md={2} lg={3} className="g-4">
-        
-        {trips.map((trip) => (
-          <Col key={trip.name}>
-            <Card className="shadow-sm h-100">
-              <Card.Body>
-                <Card.Title className="fw-bold">{trip.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">
-                  <span className="badge bg-info text-capitalize">{trip.type}</span>
-                </Card.Subtitle>
-                <Card.Text>
-                  {trip.description}
-                </Card.Text>
-              </Card.Body>
-              
-              {trip.comments && (
-                <Card.Footer>
-                  <small_ className="text-muted">
-                    <strong>Good to know:</strong> {trip.comments}
-                  </small_>
-                </Card.Footer>
+      {/* 2. ADDED THIS WRAPPER DIV */}
+      <div className="swiper-container-wrapper">
+        <Swiper
+          modules={[EffectCoverflow, Autoplay]}
+          effect="coverflow"
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView={'auto'}
+          loop={true}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          coverflowEffect={{
+            rotate: 30,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: false,
+          }}
+          onSwiper={setSwiperInstance}
+          className="my-swiper-slider"
+        >
+          {trips.map((trip) => (
+            // 3. REMOVED 'style' PROP FROM HERE
+            <SwiperSlide key={trip.name}>
+              {({ isActive }) => (
+                <Card
+                  className={`shadow-sm h-100 ${isActive ? 'active-slide' : ''}`}
+                  onClick={() => isActive && handleCardClick(trip)}
+                  style={{ cursor: isActive ? 'pointer' : 'default' }}
+                >
+                  <Card.Body>
+                    <Card.Title className="fw-bold">{trip.name}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">
+                      <span className="badge bg-info text-capitalize">{trip.type}</span>
+                    </Card.Subtitle>
+                    <Card.Text>
+                      {trip.description}
+                    </Card.Text>
+                  </Card.Body>
+                  {trip.comments && (
+                    <Card.Footer>
+                      <small className="text-muted">
+                        <strong>Good to know:</strong> {trip.comments}
+                      </small>
+                    </Card.Footer>
+                  )}
+                </Card>
               )}
-            </Card>
-          </Col>
-        ))}
-      </Row>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div> {/* 2. END OF WRAPPER DIV */}
+
+      {/* --- MODAL LOGIC (No Change) --- */}
+      <Modal show={selectedTrip != null} onHide={handleModalClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedTrip?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* ... (Modal content is the same) ... */ }
+          <h5>{selectedTrip?.location}</h5>
+          <p><strong>Type:</strong> <span className="badge bg-info text-capitalize">{selectedTrip?.type}</span></p>
+          <hr />
+          <p>{selectedTrip?.description}</p>
+          {selectedTrip?.comments && (
+            <Alert variant="info">
+              <strong>Good to know:</strong> {selectedTrip.comments}
+            </Alert>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

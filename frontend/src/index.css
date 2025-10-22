@@ -1,13 +1,157 @@
+
+
+/* --- 1. Animated Gradient Background --- */
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* The gradient itself */
+  background: linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab
+  );
+  /* Sizing it to be larger than the viewport */
+  background-size: 400% 400%;
+  
+  /* The animation */
+  animation: gradient 15s ease infinite;
+  
+  /* We need a min-height to ensure it fills the screen */
+  min-height: 100vh;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* The animation keyframes */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* --- 2. Glassmorphism Card Effect --- */
+/* We target the Bootstrap 'card' class */
+.card {
+  /* The "frosted glass" effect */
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  
+  /* A subtle border to help it stand out */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* We remove the default shadow, as the blur is our new effect */
+  box-shadow: none !important;
+}
+
+/* --- 3. UI Fixes for the Glass Effect --- */
+
+/* The header needs to be on TOP of the background */
+.navbar {
+  position: relative;
+  z-index: 10;
+}
+
+/* The accordion buttons look bad with the glass effect */
+.accordion-button {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.accordion-button:not(.collapsed) {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* The list items inside the accordion look bad too */
+.list-group-item {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* The text in the <pre> tag needs a slightly better bg */
+.itinerary-response pre {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* The card footers also need fixing */
+.card-footer {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/*
+ * --- SWIPER.JS CUSTOM STYLES (REVISED) ---
+*/
+
+/* 1. This new wrapper centers the slider vertically
+      and gives it "window" padding. */
+.swiper-container-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Use viewport height minus an estimate for the navbar */
+  min-height: 75vh;
+  padding: 2rem 0; /* Adds top/bottom padding */
+}
+
+/* 2. This holds our entire slider */
+.my-swiper-slider {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+/* 3. This is the individual slide wrapper */
+.swiper-slide {
+  transition: all 0.4s ease-out; /* Smoother transition */
+
+  /* THIS IS THE NEW "SQUARE SHAPE" */
+  /* We use !important to override Swiper's inline styles */
+  width: 400px !important;
+  height: 400px !important;
+
+  /* Side slides: blurred, small, and faded */
+  filter: blur(5px);
+  transform: scale(0.6); /* Even smaller */
+  opacity: 0.4;
+}
+
+/* 4. The active (center) slide */
+.swiper-slide-active {
+  /* Center slide: clear, full size, and full opacity */
+  filter: blur(0);
+  transform: scale(1); /* This is now the "bigger" 400x400 size */
+  opacity: 1;
+}
+
+/* 5. Ensure the card fills the new square slide */
+.swiper-slide .card,
+.swiper-slide-active .card {
+  width: 100%;
+  height: 100%;
+  /* Make the card content scroll if it overflows */
+  overflow: hidden;
+}
+
+/* 6. Make the card body scrollable */
+.swiper-slide .card .card-body {
+  overflow-y: auto; /* Adds a scrollbar if content is too long */
+}
+
+/* 7. Re-apply glass effect just for the active card */
+.swiper-slide-active .card {
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(73, 63, 63, 0.4);
+  box-shadow: none !important;
+}
+
+/* 8. Side cards are plain */
+.swiper-slide .card {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
 }
