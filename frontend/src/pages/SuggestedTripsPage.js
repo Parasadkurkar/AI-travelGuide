@@ -28,14 +28,14 @@ function SuggestedTripsPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5001/api/dynamic-trips');
+        const response = await fetch('https://travelguideserver.onrender.com/api/dynamic-trips');
         if (!response.ok) throw new Error('Dynamic API failed');
         const data = await response.json();
         setTrips(data);
       } catch (primaryError) {
         console.warn(primaryError.message, "Falling back to local DB.");
         try {
-          const fallbackResponse = await fetch('http://localhost:5001/api/trips');
+          const fallbackResponse = await fetch('https://travelguideserver.onrender.com/api/trips');
           if (!fallbackResponse.ok) throw new Error('Fallback API also failed');
           const fallbackData = await fallbackResponse.json();
           setTrips(fallbackData);

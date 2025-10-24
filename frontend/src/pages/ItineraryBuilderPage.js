@@ -25,7 +25,7 @@ function ItineraryBuilderPage() {
   setWeather(null); 
 
   try {
-    const response = await fetch('http://localhost:5001/api/generate-itinerary', {
+    const response = await fetch('https://travelguideserver.onrender.com/api/generate-itinerary', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ function ItineraryBuilderPage() {
 
     
       try {
-        const weatherRes = await axios.get('http://localhost:5001/api/weather', {
+        const weatherRes = await axios.get('https://travelguideserver.onrender.com/api/weather', {
           params: { destination }
         });
         setWeather(weatherRes.data); // Set weather data
