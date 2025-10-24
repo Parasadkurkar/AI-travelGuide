@@ -1,5 +1,4 @@
 import React from 'react';
-// Import react-bootstrap components
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -15,7 +14,7 @@ function ItineraryForm({
   isLoading 
 }) {
   return (
-    // Use a Bootstrap Card for a nice container
+  
     <Card className="shadow-sm">
       <Card.Body>
         <Card.Title as="h2" className="mb-5">Create Your Personalized Tour</Card.Title>

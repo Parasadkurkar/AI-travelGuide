@@ -6,26 +6,23 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-// --- NEW SWIPER IMPORTS ---
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/autoplay';
-// --- END SWIPER IMPORTS ---
 
 function SuggestedTripsPage() {
-  // --- Existing State ---
+
   const [trips, setTrips] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- NEW STATE ---
+
   const [selectedTrip, setSelectedTrip] = useState(null);
-  // This will hold the Swiper instance so we can pause/play it
+  
   const [swiperInstance, setSwiperInstance] = useState(null);
 
-  // --- Existing Data Fetch (with fallback) ---
   useEffect(() => {
     const fetchTrips = async () => {
       setIsLoading(true);
@@ -52,28 +49,44 @@ function SuggestedTripsPage() {
     fetchTrips();
   }, []);
 
-  // --- NEW HANDLERS ---
+
   const handleCardClick = (trip) => {
-    if (swiperInstance) swiperInstance.autoplay.stop(); // Pause the carousel
-    setSelectedTrip(trip); // Show the modal
+    if (swiperInstance) swiperInstance.autoplay.stop(); 
+    setSelectedTrip(trip); 
   };
 
   const handleModalClose = () => {
-    setSelectedTrip(null); // Hide the modal
-    if (swiperInstance) swiperInstance.autoplay.start(); // Resume the carousel
+    setSelectedTrip(null); 
+    if (swiperInstance) swiperInstance.autoplay.start(); 
   };
 
-  // --- RENDER LOGIC ---
 
-  if (isLoading) { /* ... (Spinner logic - no change) ... */ }
-  if (error) { /* ... (Error logic - no change) ... */ }
 
-  // --- NEW RENDER: SWIPER.JS CAROUSEL ---
+  if (isLoading) {
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-2 text-muted">Loading trips...</p>
+      </Container>
+    );
+   }
+  if (error) {
+    return (
+      <Container>
+        <Alert variant="danger">
+          <Alert.Heading>Error</Alert.Heading>
+          <p>{error}</p>
+        </Alert>
+      </Container>
+    );
+   }
+
+
   return (
-<Container> {/* 1. REMOVED 'fluid' PROP */}
+<Container> {}
       <h2 className="mb-4 text-center">Suggested Trips</h2>
       
-      {/* 2. ADDED THIS WRAPPER DIV */}
+      {}
       <div className="swiper-container-wrapper">
         <Swiper
           modules={[EffectCoverflow, Autoplay]}
@@ -97,7 +110,7 @@ function SuggestedTripsPage() {
           className="my-swiper-slider"
         >
           {trips.map((trip) => (
-            // 3. REMOVED 'style' PROP FROM HERE
+
             <SwiperSlide key={trip.name}>
               {({ isActive }) => (
                 <Card
@@ -128,13 +141,13 @@ function SuggestedTripsPage() {
         </Swiper>
       </div> {/* 2. END OF WRAPPER DIV */}
 
-      {/* --- MODAL LOGIC (No Change) --- */}
+      {}
       <Modal show={selectedTrip != null} onHide={handleModalClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>{selectedTrip?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* ... (Modal content is the same) ... */ }
+          { }
           <h5>{selectedTrip?.location}</h5>
           <p><strong>Type:</strong> <span className="badge bg-info text-capitalize">{selectedTrip?.type}</span></p>
           <hr />

@@ -2,12 +2,10 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 
 function WeatherDisplay({ weatherData }) {
-  // If no weather data, render nothing
   if (!weatherData) {
     return null;
   }
 
-  // Extract the data we want
   const { name, main, weather, wind } = weatherData;
   const temp = main.temp;
   const feelsLike = main.feels_like;
@@ -15,7 +13,6 @@ function WeatherDisplay({ weatherData }) {
   const icon = weather[0].icon;
   const windSpeed = wind.speed;
 
-  // OpenWeatherMap icon URL
   const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
   return (
