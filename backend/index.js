@@ -21,11 +21,7 @@ const app = express();
 // Use 5001 as an example. We can change this later.
 const port = 5001;
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 // Define a simple "GET" route for the homepage
